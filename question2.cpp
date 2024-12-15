@@ -1,59 +1,40 @@
 // question2.cpp
-// Name: [Your Name]
-// Student ID: [Your Student ID]
-// Date of Submission: 28-Nov-2024
+// Name: [Nurbyergyen]
+// Student ID: [1123553]
+// Date of Submission: [2024.12.12]
 
 #include <iostream>
-#include <queue>
 #include <vector>
-#include <string>
-#include <algorithm>
+#include <queue>
 using namespace std;
 
-struct Task {
-    string name;
-    int priority;
+vector<int> bfsTraversal(const vector<vector<int>>& adj) {
+    vector<int> visited(adj.size(), 0), result;
+    queue<int> q;
+    q.push(0);
+    visited[0] = 1;
 
-    // Overload the < operator for max heap
-    bool operator<(const Task& other) const {
-        return priority < other.priority;
-    }
-};
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        result.push_back(node);
 
-int main() {
-    priority_queue<Task> pq;
-    int n;
-    cout << "Enter number of operations: ";
-    cin >> n;
-    cin.ignore();
-
-    for (int i = 0; i < n; i++) {
-        string operation;
-        getline(cin, operation);
-
-        if (operation.substr(0, 3) == "ADD") {
-            string name = operation.substr(4, operation.find_last_of(" ") - 4);
-            int priority = stoi(operation.substr(operation.find_last_of(" ") + 1));
-            pq.push({name, priority});
-        } else if (operation == "GET") {
-            if (!pq.empty()) {
-                cout << pq.top().name << endl;
-                pq.pop();
-            } else {
-                cout << "No tasks available!" << endl;
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                visited[neighbor] = 1;
+                q.push(neighbor);
             }
         }
     }
+    return result;
+}
 
-    cout << "Remaining tasks: ";
-    vector<Task> remaining;
-    while (!pq.empty()) {
-        remaining.push_back(pq.top());
-        pq.pop();
-    }
-    sort(remaining.begin(), remaining.end(), [](Task a, Task b) { return a.priority > b.priority; });
-    for (auto& task : remaining) {
-        cout << "(" << task.name << ", " << task.priority << ") ";
+int main() {
+    vector<vector<int>> adj = {{2, 3, 1}, {0}, {0, 4}, {0}, {2}};
+    vector<int> bfs = bfsTraversal(adj);
+
+    for (int node : bfs) {
+        cout << node << " ";
     }
     cout << endl;
 
