@@ -1,68 +1,45 @@
 // question4.cpp
-// Name: [Your Name]
-// Student ID: [Your Student ID]
-// Date of Submission: 28-Nov-2024
+// Name: [Nurbyergyen]
+// Student ID: [1123553]
+// Date of Submission: [2024.12.12]
 
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <algorithm>
+#include <utility>
 using namespace std;
 
-struct Task {
-    int profit;
-    int deadline;
-};
+int primsMST(int V, const vector<vector<pair<int, int>>>& adj) {
+    vector<int> visited(V, 0);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    pq.push({0, 0}); // {weight, node}
+    int mstWeight = 0;
 
-bool compare(Task a, Task b) {
-    return a.profit > b.profit;
-}
+    while (!pq.empty()) {
+        auto [weight, node] = pq.top();
+        pq.pop();
 
-int scheduleTasks(vector<Task>& tasks) {
-    sort(tasks.begin(), tasks.end(), compare);
-    int maxDeadline = 0;
+        if (visited[node]) continue;
+        visited[node] = 1;
+        mstWeight += weight;
 
-    for (auto& task : tasks) {
-        maxDeadline = max(maxDeadline, task.deadline);
-    }
-
-    vector<int> slots(maxDeadline, -1);
-    int maxProfit = 0;
-
-    for (auto& task : tasks) {
-        for (int i = task.deadline - 1; i >= 0; i--) {
-            if (slots[i] == -1) {
-                slots[i] = task.profit;
-                maxProfit += task.profit;
-                break;
+        for (auto [neighbor, edgeWeight] : adj[node]) {
+            if (!visited[neighbor]) {
+                pq.push({edgeWeight, neighbor});
             }
         }
     }
-
-    cout << "Scheduled Tasks: ";
-    for (int i = 0; i < slots.size(); i++) {
-        if (slots[i] != -1) {
-            cout << slots[i] << " ";
-        }
-    }
-    cout << endl;
-
-    return maxProfit;
+    return mstWeight;
 }
 
 int main() {
-    int n;
-    cout << "Enter number of tasks: ";
-    cin >> n;
+    int V = 3;
+    vector<vector<pair<int, int>>> adj(V);
+    adj[0] = {{1, 5}, {2, 1}};
+    adj[1] = {{0, 5}, {2, 3}};
+    adj[2] = {{0, 1}, {1, 3}};
 
-    vector<Task> tasks(n);
-    for (int i = 0; i < n; i++) {
-        cout << "Enter profit and deadline for task " << i + 1 << ": ";
-        cin >> tasks[i].profit >> tasks[i].deadline;
-    }
-
-    int maxProfit = scheduleTasks(tasks);
-    cout << "Maximum Profit: " << maxProfit << endl;
+    cout << "MST Weight: " << primsMST(V, adj) << endl;
 
     return 0;
 }
